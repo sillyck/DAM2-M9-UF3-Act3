@@ -3,80 +3,45 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Random;
 
-public class Act4_Client
-{
+public class Act4_Client {
 	public static int heartbeat;
 	public static String nom;
-	
+
 	@SuppressWarnings("InfiniteLoopStatement")
-	public static void main(String[] args)
-	{
-//		if(args.length==0)
-//		{
-//			System.out.println("arguments: <nom>");
-//			System.exit(1);
-//		}
-		
-//		heartbeat = (int)(2 + Math.random() + Math.random() + Math.random());
-		heartbeat = 2+(new Random().nextInt(5)+1);
-		System.out.println("Aquest client ha decidit fer un heartbeat de "+heartbeat+" segons");
-		
-		nom = "client_"+generate();
+	public static void main(String[] args) {
+
+		heartbeat = 2 + (new Random().nextInt(5) + 1);
+		System.out.println("Aquest client ha decidit fer un heartbeat de " + heartbeat + " segons");
+
+		nom = "client_" + generate();
 		Act4_Server_Interface serv = null;
-		
-		try
-		{
-			Registry registry = LocateRegistry.getRegistry("localhost",5555);
-			serv = (Act4_Server_Interface)registry.lookup("Act4");
-		}
-		catch(Exception e)
-		{
+
+		try {
+			Registry registry = LocateRegistry.getRegistry("localhost", 5555);
+			serv = (Act4_Server_Interface) registry.lookup("Act4");
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		if(serv!=null)
-		{
-			try
-			{
-				serv.anunciarPresencia(nom,heartbeat);
-			}
-			catch(RemoteException e)
-			{
+
+		if (serv != null) {
+			try {
+				serv.anunciarPresencia(nom, heartbeat);
+			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		}
-		
-		for(;;)
-		{
-//			if(System.nanoTime() - startTime>=(heartbeat*1_000_000_000L))
-//			{
-//				startTime = 0L;
-//				try
-//				{
-//					assert serv!=null;
-//					System.out.println("Bum bum");
-//					serv.batec(nom);
-//				}
-//				catch(RemoteException e)
-//				{
-//					throw new RuntimeException(e);
-//				}
-//			}
+
+		for (;;) {
 			long startTime = System.nanoTime();
-			long targetTime = startTime + (heartbeat*1_000_000_000L);
-			
-			for(;;)
-			{
-				if(System.nanoTime()>=targetTime)
-				{
+			long targetTime = startTime + (heartbeat * 1_000_000_000L);
+
+			for (;;) {
+				if (System.nanoTime() >= targetTime) {
 					System.out.println("Batec!");
-					try
-					{
-						assert serv!=null;
+					try {
+						assert serv != null;
 						serv.batec(nom);
-					}
-					catch(RemoteException e)
-					{
+					} catch (RemoteException e) {
 						throw new RuntimeException(e);
 					}
 					break;
@@ -84,14 +49,14 @@ public class Act4_Client
 			}
 		}
 	}
-	
-	public static String generate()
-	{
+
+	public static String generate() {
 		String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		Random rand = new Random();
 		StringBuilder result = new StringBuilder();
-		
-		for(int i=0; i<5; i++) result.append(alphabet.charAt(rand.nextInt(alphabet.length())));
+
+		for (int i = 0; i < 5; i++)
+			result.append(alphabet.charAt(rand.nextInt(alphabet.length())));
 		return result.toString();
 	}
 }
